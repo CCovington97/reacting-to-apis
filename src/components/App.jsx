@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as GhibliLogo from '../images/ghiblilogo'
+import Navbar from './Navbar';
 import 'isomorphic-fetch';
 import 'es6-promise';
 
@@ -12,6 +12,9 @@ class App extends Component {
             loadFilms: false,
             loadPeople: false
         }
+
+        this.loadFilms = this.loadFilms.bind(this);
+        this.loadPeople = this.loadPeople.bind(this);
     }
 
     // Phase One
@@ -28,7 +31,8 @@ class App extends Component {
             .then(res => res.json())
             .then(films => this.setState({
                 films: films,
-                loadFilms: true
+                loadFilms: true,
+                loadPeople: false
             }))
             .catch(err => console.log(err))
     }
@@ -38,7 +42,8 @@ class App extends Component {
             .then(res => res.json())
             .then(people => this.setState({
                 people: people,
-                loadPeople: true
+                loadPeople: true,
+                loadFilms: false
             }))
             .catch(err => console.log(err))
     }
@@ -60,36 +65,36 @@ class App extends Component {
         if (this.state.loadFilms) {
             return (
                 <div>
-                    <Navbar loadPeople={this.loadPeople} />
+                    <Navbar loadPeople={this.loadPeople} loadFilms={this.loadFilms} />
                     {this.state.films.map(film => {
                         return (
                             <div key={film.id}>
                                 <h1>{film.title}</h1>
                                 <p>{film.description}</p>
-                            </div>)
-                    })
-                    }
-                </div>)
+                            </div>
+                        )
+                    })}
+                </div>
+            )
         } else if (this.state.loadPeople) {
             return (
                 <div>
-                    <Navbar loadPeople={this.loadPeople} />
-                    {this.state.people.map(people => {
+                    <Navbar loadPeople={this.loadPeople} loadFilms={this.loadFilms} />
+                    {this.state.people.map(person => {
                         return (
-                            <div key={people.id}>
-                                <h1>{people.name}</h1>
-                                <p>{people.age}</p>
-                            </div>)
-                    })
-                    }
-                </div>)
+                            <div key={person.id}>
+                                <h1>{person.name}</h1>
+                                <p>{person.gender}</p>
+                                <p>{person.age}</p>
+                                <a href={person.url}>{person.name} JSON Response</a>
+                            </div>
+                        )
+                    })}
+                </div>
+            )
         } else {
             return (
-                <div>
-                    <img id="ghibli-logo" src={GhibliLogo} alt="ghibli-log" />
-                    <button onClick={() => this.loadFilms()}>Load Films</button>
-                    <button onClick={() => this.loadPeople()}>Load People</button>
-                </div>
+                <Navbar loadPeople={this.loadPeople} loadFilms={this.loadFilms} />
             )
         }
     }
